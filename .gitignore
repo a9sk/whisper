@@ -1,0 +1,12 @@
+test/
+
+keys/
+*.key
+*.pem
+*.env
+*.log
+*.cert
+*.crt
+
+# file already pushed with pleceholder values
+config/db_connection.php
