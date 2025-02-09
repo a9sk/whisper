@@ -6,6 +6,7 @@ USE whisper;
 
 CREATE TABLE users (
     id BIGINT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    role ENUM('user', 'admin') DEFAULT 'user',
     username VARCHAR(50) NOT NULL UNIQUE,
     email VARCHAR(100) UNIQUE, -- most probably will not be implemented...
     hashed_password CHAR(60) NOT NULL, -- i am using bycrypt so char(60) should be good...
