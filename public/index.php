@@ -39,7 +39,7 @@ session_start();
         <?php if (!isset($_SESSION['user_id'])): ?>
             <a href="login.php" class="btn btn-success mt-3">Start Chatting Securely</a>
         <?php else: ?>
-            <a href="chat.php" class="btn btn-primary mt-3">Go to Chat</a>
+            <a href="chat.php" class="btn btn-primary mt-3">Start Chatting Securely</a>
         <?php endif; ?>
     </div>
 </section>

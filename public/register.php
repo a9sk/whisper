@@ -71,10 +71,10 @@ $username_err = $password_err = $email_err = $password_confirm_err = " ";
             </a>
             <?php if (!isset($_SESSION['user_id'])): ?>
                 <a href="index.php" class="btn btn-outline-light btn-login">Home</a>
-                <a href="register.php" class="btn btn-outline-light btn-register">Register</a>
+                <a href="login.php" class="btn btn-outline-light btn-register">Login</a> <!-- here i use btn-register for the color, even if it is for the login -->
             <?php else: ?>
                 <a href="index.php" class="btn btn-outline-light btn-login">Home</a>
-                <a href="chat.php" class="btn btn-outline-primary">Chat</a>
+                <a href="chat.php" class="btn btn-outline-primary btn-register">Chat</a>
             <?php endif; ?>
         </div>
     </div>
