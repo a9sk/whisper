@@ -1,8 +1,55 @@
 <?php
 include '../config/db_connection.php';
+include '../utils/filter.php';
 
-$username_err = $password_err = $email_err = $password_confirm_err = " ";
+$username = $password = $password_confirm = $email = "";
+$username_err = $password_err = $email_err = $password_confirm_err = $generic_error = "";
 
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    $username = filter_text($_POST['username']);
+    if (empty($username) || !preg_match("/^[a-zA-Z\s]+$/", $username)) {
+        $username_err = "Username must contain only letters.";
+    }
+
+    $email = filter_text($_POST['email']);
+    if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+        $email_err = "The email is not valid.";
+    }
+
+    $password = filter_text($_POST['password']); // i do not care about how strong your password is... for now
+    if (strlen($password) < 8) {
+        $password_err = "Password must be at least 8 characters long.";
+    }
+
+    $password_confirm = filter_text($_POST['password_confirm']);
+    if ($password !== $password_confirm) {
+        $password_confirm_err = "Passwords do not match.";
+    }
+
+    // check if any error occoured
+    if (empty($username_err) && empty($email_err) && empty($password_err) && empty($password_confirm_err)) {
+        try {
+            $hashed_password = password_hash($password, PASSWORD_BCRYPT);
+
+            $stmt = $db_conn->prepare("INSERT INTO users (username, email, hashed_password) VALUES (?, ?, ?)");
+            $stmt->bind_param("sss", $username, $email, $hashed_password);
+
+            if ($stmt->execute()) {
+                header('Location: login.php');
+                exit;
+            } else {
+                if ($db_conn->errno === 1062) { // error number for duplicate entry
+                    $email_err = "A user already exists with this email.";
+                } else {
+                    $generic_error = "Error during registration: " . $db_conn->error;
+                }
+            }
+            $stmt->close();
+        } catch (Exception $ex) {
+            $generic_error = "An unexpected error occurred: " . $ex->getMessage();
+        }
+    }
+}
 ?>
 
 <!DOCTYPE html>
@@ -87,30 +134,31 @@ $username_err = $password_err = $email_err = $password_confirm_err = " ";
         <form action="<?= $_SERVER['PHP_SELF'] ?>" method="post">
             <div class="mb-3">
                 <label for="username" class="form-label">Username</label>
-                <input type="text" id="username" name="username" class="form-control" value="<?= isset($username) ? htmlspecialchars($username) : '' ?>">
+                <input type="text" id="username" name="username" class="form-control" value="<?= isset($username) ? htmlspecialchars($username) : '' ?>" require>
                 <span class="error"><?= $username_err ?></span>
             </div>
 
             <div class="mb-3">
                 <label for="email" class="form-label">Email</label>
-                <input type="email" id="email" name="email" class="form-control" value="<?= isset($email) ? htmlspecialchars($email) : '' ?>">
+                <input type="email" id="email" name="email" class="form-control" value="<?= isset($email) ? htmlspecialchars($email) : '' ?>" require> <!-- email might not be required -->
                 <span class="error"><?= $email_err ?></span>
             </div>
 
             <div class="mb-3">
                 <label for="password" class="form-label">Password</label>
-                <input type="password" id="password" name="password" class="form-control">
+                <input type="password" id="password" name="password" class="form-control" require>
                 <span class="error"><?= $password_err ?></span>
             </div>
 
             <div class="mb-3">
                 <label for="password_confirm" class="form-label">Confirm password</label>
-                <input type="password" id="password_confirm" name="password_confirm" class="form-control">
+                <input type="password" id="password_confirm" name="password_confirm" class="form-control" require>
                 <span class="error"><?= $password_confirm_err ?></span>
             </div>
 
             <button type="submit" class="btn btn-form-register">Register</button>
         </form>
+        <span class="<?= isset($generic_error) ? 'error' : ''?>"><?= $generic_error ?></span>
     </div>
 </div>
 
