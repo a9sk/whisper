@@ -1,8 +1,51 @@
 <?php
+session_start(); // in the login page we start the session
+
 include '../config/db_connection.php';
 
-$username_email_err = $password_err = " ";
+// $username_email_err = $password_err = 
+$generic_error = "";
 
+// i should also implement CAPTCHA to avoid spamming
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    $username_email = trim($_POST['username_email'] ?? '');
+    $password = $_POST['password'] ?? '';
+
+    if (empty($username_email) || empty($password)) {
+        $generic_error = "Invalid username/email or password.";
+    } else {
+
+        $query = filter_var($username_email, FILTER_VALIDATE_EMAIL) ? "SELECT id, username, email, hashed_password FROM users WHERE email = ? LIMIT 1" : "SELECT id, username, email, hashed_password FROM users WHERE username = ? LIMIT 1";
+
+        if ($stmt = mysqli_prepare($db_conn, $query)) {
+            mysqli_stmt_bind_param($stmt, 's', $username_email);
+            mysqli_stmt_execute($stmt);
+            $result = mysqli_stmt_get_result($stmt);
+
+            if ($user = mysqli_fetch_assoc($result)) {
+                if (password_verify($password, $user['hashed_password'])) {
+                    
+                    session_regenerate_id(); // to avoid session fixation attacks
+                    // if the loging is successful we set the session values 
+                    $_SESSION['user_id'] = $user['id'];
+                    $_SESSION['user_username'] = $user['username'];
+                    $_SESSION['user_email'] = $user['email'];
+
+                    header('Location: index.php');
+                    exit;
+                } else {
+                    $generic_error = "Invalid username/email or password.";
+                }
+            } else {
+                $generic_error = "Invalid username/email or password.";
+            }
+
+            mysqli_stmt_close($stmt);
+        } else {
+            $generic_error = "An unexpected error occurred. Please try again later.";
+        }
+    }
+}
 ?>
 
 <!DOCTYPE html>
@@ -71,7 +114,7 @@ $username_email_err = $password_err = " ";
             </a>
             <?php if (!isset($_SESSION['user_id'])): ?>
                 <a href="index.php" class="btn btn-outline-light btn-login">Home</a>
-                <a href="login.php" class="btn btn-outline-light btn-register">Register</a>
+                <a href="register.php" class="btn btn-outline-light btn-register">Register</a>
             <?php else: ?>
                 <a href="index.php" class="btn btn-outline-light btn-login">Home</a>
                 <a href="chat.php" class="btn btn-outline-primary btn-register">Chat</a>
@@ -88,19 +131,21 @@ $username_email_err = $password_err = " ";
             <div class="mb-3">
                 <label for="username_email" class="form-label">Username/Email</label>
                 <input type="text" id="username_email" name="username_email" class="form-control" value="<?= isset($username_email) ? htmlspecialchars($username_email) : '' ?>">
-                <span class="error"><?= $username_email_err ?></span>
+                <span class="error"><?= $generic_error ?></span>
             </div>
 
             <div class="mb-3">
                 <label for="password" class="form-label">Password</label>
                 <input type="password" id="password" name="password" class="form-control">
-                <span class="error"><?= $password_err ?></span>
+                <span class="error"><?= $generic_error ?></span>
             </div>
 
             <button type="submit" class="btn btn-form-register">Login</button>
-
+            
+            <span>
             <a href="reset_password.php" class="btn error">I forgot the password</a> <!-- using css btn and error classes to style this... -->
-
+            <a href="register.php" class="btn error">Register</a>
+            </span>
         </form>
     </div>
 </div>

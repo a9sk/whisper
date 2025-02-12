@@ -25,8 +25,8 @@ session_start();
                 <a href="login.php" class="btn btn-outline-light btn-login">Login</a>
                 <a href="register.php" class="btn btn-outline-light btn-register">Register</a>
             <?php else: ?>
-                <a href="chat.php" class="btn btn-outline-primary">Chat</a>
-                <a href="logout.php" class="btn btn-outline-danger">Logout</a>
+                <a href="chat.php" class="btn btn-outline-light btn-login">Chat</a>
+                <a href="logout.php" class="btn btn-outline-danger btn-register">Logout</a>
             <?php endif; ?>
         </div>
     </div>
@@ -39,7 +39,7 @@ session_start();
         <?php if (!isset($_SESSION['user_id'])): ?>
             <a href="login.php" class="btn btn-success mt-3">Start Chatting Securely</a>
         <?php else: ?>
-            <a href="chat.php" class="btn btn-primary mt-3">Start Chatting Securely</a>
+            <a href="chat.php" class="btn btn-success mt-3">Start Chatting Securely</a>
         <?php endif; ?>
     </div>
 </section>
