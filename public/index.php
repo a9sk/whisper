@@ -26,7 +26,7 @@ session_start();
                 <a href="register.php" class="btn btn-outline-light btn-register">Register</a>
             <?php else: ?>
                 <a href="chat.php" class="btn btn-outline-light btn-login">Chat</a>
-                <a href="logout.php" class="btn btn-outline-danger btn-register">Logout</a>
+                <a href="../utils/logout.php" class="btn btn-outline-danger btn-register">Logout</a>
             <?php endif; ?>
         </div>
     </div>
