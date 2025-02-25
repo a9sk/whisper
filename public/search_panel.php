@@ -38,8 +38,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['update_user_id'])) {
 $searchResults = [];
 if ($_SERVER['REQUEST_METHOD'] === 'GET' && isset($_GET['search_query'])) {
     $searchQuery = htmlspecialchars($_GET['search_query']);
-    // either use username or hashed password to search... idk but i found online searching by password makes sense
-    $stmt = $pdo->prepare("SELECT id, username, password FROM users WHERE username LIKE :query OR password LIKE :query");
+
+    // search only by username (removed search by password hash)
+    $stmt = $pdo->prepare("SELECT id, username FROM users WHERE username LIKE :query");
     $stmt->execute(['query' => "%$searchQuery%"]);
     $searchResults = $stmt->fetchAll(PDO::FETCH_ASSOC);
 }
@@ -59,8 +60,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET' && isset($_GET['search_query'])) {
 <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
     <div class="container">
         <a class="navbar-brand" href="index.php">Whisper</a>
-        <div class="d-flex align-items-center ms-auto">ù
-            <!-- no need to check if you are logged in here... -->
+        <!-- no need to check if you are logged in here... -->
+        <div class="d-flex align-items-center ms-auto">
             <a href="index.php" class="btn btn-outline-light me-2">Home</a>
             <a href="logout.php" class="btn btn-outline-danger">Logout</a>
         </div>
@@ -77,7 +78,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET' && isset($_GET['search_query'])) {
 
     <form method="GET" class="mb-5">
         <div class="input-group">
-            <input type="text" name="search_query" class="form-control" placeholder="Search by username or password hash" value="<?= isset($_GET['search_query']) ? htmlspecialchars($_GET['search_query']) : '' ?>" required>
+            <input type="text" name="search_query" class="form-control" placeholder="Search by username" value="<?= isset($_GET['search_query']) ? htmlspecialchars($_GET['search_query']) : '' ?>" required>
             <button type="submit" class="btn btn-primary">Search</button>
         </div>
     </form>
@@ -89,7 +90,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET' && isset($_GET['search_query'])) {
                 <tr>
                     <th>ID</th>
                     <th>Username</th>
-                    <th>Password Hash</th>
                     <th>Actions</th>
                 </tr>
             </thead>
@@ -98,7 +98,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET' && isset($_GET['search_query'])) {
                     <tr>
                         <td><?= htmlspecialchars($user['id']) ?></td>
                         <td><?= htmlspecialchars($user['username']) ?></td>
-                        <td><?= htmlspecialchars($user['password']) ?></td>
                         <td>
                             <button class="btn btn-warning btn-sm" data-bs-toggle="modal" data-bs-target="#updateModal<?= $user['id'] ?>">Edit</button>
                             <form method="POST" class="d-inline-block">
