@@ -12,8 +12,10 @@ if (!isset($_SESSION['user_id']) || !isset($_SESSION['user_role']) || $_SESSION[
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['delete_user_id'])) {
     $deleteUserId = intval($_POST['delete_user_id']);
 
-    $stmt = $pdo->prepare("DELETE FROM users WHERE id = :id");
-    $stmt->execute(['id' => $deleteUserId]);
+    $stmt = mysqli_prepare($db_conn, "DELETE FROM users WHERE id = ?");
+    mysqli_stmt_bind_param($stmt, 'i', $deleteUserId);
+    mysqli_stmt_execute($stmt);
+    mysqli_stmt_close($stmt);
 
     $message = "User with ID $deleteUserId has been deleted successfully.";
 }
@@ -24,12 +26,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['update_user_id'])) {
     $newUsername = htmlspecialchars($_POST['username']);
     $newPassword = password_hash($_POST['password'], PASSWORD_BCRYPT);
 
-    $stmt = $pdo->prepare("UPDATE users SET username = :username, password = :password WHERE id = :id");
-    $stmt->execute([
-        'username' => $newUsername,
-        'password' => $newPassword,
-        'id' => $updateUserId
-    ]);
+    $stmt = mysqli_prepare($db_conn, "UPDATE users SET username = ?, password = ? WHERE id = ?");
+    mysqli_stmt_bind_param($stmt, 'ssi', $newUsername, $newPassword, $updateUserId);
+    mysqli_stmt_execute($stmt);
+    mysqli_stmt_close($stmt);
 
     $message = "User with ID $updateUserId has been updated successfully.";
 }
@@ -39,10 +39,13 @@ $searchResults = [];
 if ($_SERVER['REQUEST_METHOD'] === 'GET' && isset($_GET['search_query'])) {
     $searchQuery = htmlspecialchars($_GET['search_query']);
 
-    // search only by username (removed search by password hash)
-    $stmt = $pdo->prepare("SELECT id, username FROM users WHERE username LIKE :query");
-    $stmt->execute(['query' => "%$searchQuery%"]);
-    $searchResults = $stmt->fetchAll(PDO::FETCH_ASSOC);
+    $stmt = mysqli_prepare($db_conn, "SELECT id, username FROM users WHERE username LIKE ?");
+    $searchQuery = "%$searchQuery%";
+    mysqli_stmt_bind_param($stmt, 's', $searchQuery);
+    mysqli_stmt_execute($stmt);
+    $result = mysqli_stmt_get_result($stmt);
+    $searchResults = mysqli_fetch_all($result, MYSQLI_ASSOC);
+    mysqli_stmt_close($stmt);
 }
 ?>
 
