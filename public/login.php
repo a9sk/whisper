@@ -15,7 +15,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $generic_error = "Invalid username/email or password.";
     } else {
 
-        $query = filter_var($username_email, FILTER_VALIDATE_EMAIL) ? "SELECT id, username, email, hashed_password FROM users WHERE email = ? LIMIT 1" : "SELECT id, username, email, hashed_password FROM users WHERE username = ? LIMIT 1";
+        $query = filter_var($username_email, FILTER_VALIDATE_EMAIL) ? "SELECT id, username, email, hashed_password, role FROM users WHERE email = ? LIMIT 1" : "SELECT id, username, email, hashed_password, role FROM users WHERE username = ? LIMIT 1";
 
         if ($stmt = mysqli_prepare($db_conn, $query)) {
             mysqli_stmt_bind_param($stmt, 's', $username_email);
@@ -31,6 +31,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     $_SESSION['user_username'] = $user['username'];
                     $_SESSION['user_email'] = $user['email'];
                     $_SESSION['user_role'] = $user['role'];
+
+                    // debug code to print the session values
+                    // echo '<pre>';
+                    // print_r($_SESSION);
+                    // echo '</pre>';
+                    // exit;
 
                     header('Location: index.php');
                     exit;
