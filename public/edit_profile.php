@@ -1,8 +1,15 @@
 <?php
 session_start();
-# add wherefrom to every page
 
+include '../config/db_connection.php';
 $generic_error = '';
+
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+
+    if (isset($_POST['username'])) {
+
+    }
+}
 ?>
 
 <!DOCTYPE html>
@@ -63,7 +70,7 @@ $generic_error = '';
         }
 
         .hero {
-            height: 120vh;
+            height: 75vh;
         }
     </style>
 </head>
@@ -83,7 +90,7 @@ $generic_error = '';
                 <a href="chat.php" class="btn btn-outline-light btn-login">Chat</a>
                 <a href="../utils/logout.php" class="btn btn-outline-danger btn-register">Logout</a>
             <?php endif; ?>
-            <!-- <a href="edit_profile.php" class="btn btn-outline-light btn-register"><i class="fa fa-user-circle-o" aria-hidden="true"></i></a> profile icon added only to this page, shall add to every other one -->
+            <a href="edit_profile.php" class="btn btn-outline-light btn-register"><i class="fa fa-user-circle-o" aria-hidden="true"></i></a>
         </div>
     </div>
 </nav>
@@ -95,52 +102,32 @@ $generic_error = '';
             <p class="lead">Make sure you register and login before you can start to use the service.</p>
 
             <a href="login.php" class="btn btn-success mt-3">Start Chatting Securely</a>
-
         <?php else: ?>
             <h1>Welcome <span style="color: #00ffcc;"><?=$_SESSION['user_username']?></span></h1>
             
             <p class="lead">Modify your information or delete your profile with the following form.</p>
 
             <form action="<?= $_SERVER['PHP_SELF'] ?>" method="post">
+
                 <div class="mb-3">
                     <label for="username" class="form-label">Username</label>
-                    <input type="text" id="username" name="username" class="form-control" value="<?= $_SESSION['user_username'] ?>"> <!-- should always be set right??-->
+                    <input type="text" id="username" name="username" class="form-control" value="<?= $_SESSION['user_username'] ?>" required>
                     <span class="error"><?= $generic_error ?></span>
                 </div>
+
 
                 <div class="mb-3">
                     <label for="email" class="form-label">Email</label>
-                    <input type="text" id="email" name="email" class="form-control" value="<?= isset($_SESSION['user_email']) ? htmlspecialchars($_SESSION['user_email']) : '' ?>" placeholder="<?php (!isset($_SESSION['user_email']) || $_SESSION['user_email'] == "") ? "No email set for this user" : ''?>">
+                    <input type="text" id="email" name="email" class="form-control" value="<?= isset($_SESSION['user_email']) ? htmlspecialchars($_SESSION['user_email']) : '' ?>" required>
                     <span class="error"><?= $generic_error ?></span>
                 </div>
-
-                <div class="mb-3">
-                    <label for="password" class="form-label">Password</label>
-                    <input type="password" id="password" name="password" class="form-control">
-                    <span class="error"><?= $generic_error ?></span>
-                </div>
-
-                
-                <div class="mb-3">
-                    <label for="new_password" class="form-label">New Password</label>
-                    <input type="new_password" id="new_password" name="new_password" class="form-control">
-                    <span class="error"><?= $generic_error ?></span>
-                </div>
-
-                <div class="mb-3">
-                    <label for="repeat_new_password" class="form-label">Confirm New Password</label>
-                    <input type="repeat_new_password" id="repeat_new_password" name="repeat_new_password" class="form-control">
-                    <span class="error"><?= $generic_error ?></span>
-                </div>
-
-                <span>
-                <a href="reset_password.php" class="btn error">I forgot the password</a> <!-- using css btn and error classes to style this... -->
-                </span>
-
+                <hr>
                 <button type="submit" class="btn btn-form-register">Modify</button>
-                <button type="submit" class="btn btn-danger">Delete</button>
             </form>
+
+            <hr>
             
+            <a href="change_password.php" class="btn btn-form-register">Change Password</a>
         <?php endif; ?>
     </div>
 </section>
