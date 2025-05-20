@@ -24,6 +24,8 @@ CREATE TABLE messages (
     sender BIGINT NOT NULL,
     receiver BIGINT NOT NULL,
     should_save BOOLEAN DEFAULT 0, -- maybe i could let users decide to make some messages permanent
+    is_read BOOLEAN DEFAULT 0, -- track if message has been read
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP, -- track when message was created
 
     FOREIGN KEY (sender) REFERENCES users(id) ON DELETE CASCADE,
     FOREIGN KEY (receiver) REFERENCES users(id) ON DELETE CASCADE
@@ -31,3 +33,4 @@ CREATE TABLE messages (
 
 CREATE INDEX idx_sender ON messages(sender);
 CREATE INDEX idx_receiver ON messages(receiver);
+CREATE INDEX idx_created_at ON messages(created_at); -- index for sorting messages by creation time
