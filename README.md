@@ -8,18 +8,18 @@ A secure, encrypted chat application that keeps your conversations private - bec
 - **User Authentication**: Secure login system to keep the nosy neighbors out
 - **Real-time Messaging**: Because waiting for messages is so 2010
 - **Inbox Management**: Keep track of your conversations like a digital postmaster
-- **Modern UI**: Dark theme by default (because we're not savages who use light mode)
+- **Modern UI**: Dark theme by default (we're not savages like that)
 
 ## Getting Started
 
 ### Prerequisites
 
-- PHP 7.4 or higher (because we're not living in the past)
+- PHP 7.4 or higher
 - MySQL 5.7 or higher
 - A web server (Apache/Nginx) - XAMPP works great!
 - A sense of adventure (optional but recommended)
 
-### Installation
+### Local installation
 
 1. Clone this repository:
    ```bash
