@@ -1,5 +1,10 @@
 # Whisper
 
+> **Note:** This is an old high school project.  
+> It is no longer maintained but i might be coming back to it.
+
+![Status: Archived](https://img.shields.io/badge/status-archived-red)
+
 A secure, encrypted chat application that keeps your conversations private - because your secrets are safer with us than in your browser history.
 
 ## Features
